@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Línea temporal · Psicología de la Educación</title>
+<meta name="description" content="Línea temporal interactiva con diez momentos clave en la historia de la Psicología de la Educación, de William James a la LOGSE.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f5f0; --surface:#ffffff; --surface-2:#f1eee6; --ink:#1d2421; --muted:#5b6662; --line:#d9d4c7;
+  --brand:#0f5a46; --brand-soft:#e3efe9; --accent:#c4552d; --accent-soft:#f6e4dc;
+  --land:#e4dfd2; --land-on:#cfe3d8; --sea:#f7f5f0;
+  --shadow:0 10px 30px rgba(20,30,25,.08);
+  --c-func:#7b6cc4; --c-cond:#c4552d; --c-psico:#b08a1e; --c-nueva:#2f8f6b;
+  --c-hist:#2c6fb3; --c-const:#0f5a46; --c-cogn:#8c4a8f; --c-social:#d0802a; --c-ley:#5b6662;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121614; --surface:#1b211e; --surface-2:#232a26; --ink:#eef1ef; --muted:#a3ada9; --line:#2f3733;
+    --brand:#5fc39d; --brand-soft:#1f3a30; --accent:#f08a63; --accent-soft:#3a2620;
+    --land:#2a322e; --land-on:#24463a; --sea:#121614;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121614; --surface:#1b211e; --surface-2:#232a26; --ink:#eef1ef; --muted:#a3ada9; --line:#2f3733;
+  --brand:#5fc39d; --brand-soft:#1f3a30; --accent:#f08a63; --accent-soft:#3a2620;
+  --land:#2a322e; --land-on:#24463a; --sea:#121614;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;font-size:17px;line-height:1.55}
+a{color:var(--brand)}
+button{font:inherit}
+.wrap{max-width:1160px;margin:0 auto;padding:0 16px}
+header.hero{padding:52px 0 24px;border-bottom:1px solid var(--line)}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.kicker{letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--brand);font-weight:700}
+h1{font-family:Fraunces,Georgia,serif;font-size:clamp(32px,5vw,54px);line-height:1.05;margin:10px 0 12px}
+.lead{max-width:780px;color:var(--muted);font-size:19px;margin:0}
+.byline{margin-top:14px;font-size:15px;color:var(--muted)}
+.pill{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
+.pill:hover{border-color:var(--brand)}
+.progress{margin-top:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:15px}
+.progress .bar{width:220px;max-width:60vw;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress .bar i{display:block;height:100%;width:0;background:var(--brand);transition:width .4s}
+nav.toc{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+nav.toc a{font-size:14px;text-decoration:none;border:1px solid var(--line);padding:6px 12px;border-radius:999px;color:var(--ink);background:var(--surface)}
+nav.toc a:hover{border-color:var(--brand)}
+section{padding:40px 0}
+h2{font-family:Fraunces,Georgia,serif;font-size:30px;margin:0 0 6px}
+.sub{color:var(--muted);margin:0 0 18px}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+
+/* barra de herramientas */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.search{flex:1 1 240px;min-width:200px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:6px 12px}
+.search input{border:0;outline:0;background:transparent;color:var(--ink);font:inherit;width:100%}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:7px 12px;cursor:pointer;font-size:15px;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--brand)}
+.btn.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 11px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.chip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.chip[aria-pressed="false"]{opacity:.45}
+.hint{font-size:13px;color:var(--muted);margin:0 0 6px}
+
+/* pista proporcional */
+.track-wrap{position:relative;overflow-x:auto;overflow-y:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface);cursor:grab;user-select:none;-webkit-overflow-scrolling:touch}
+.track-wrap.dragging{cursor:grabbing}
+.track{position:relative;height:350px}
+.axis{position:absolute;left:0;right:0;top:170px;height:4px;background:var(--line);border-radius:4px}
+.tick{position:absolute;top:162px;width:1px;height:20px;background:var(--line)}
+.tick span{position:absolute;top:22px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--muted)}
+.mk{position:absolute;top:0;width:0;height:100%}
+.mk .stem{position:absolute;left:-1px;width:2px;background:var(--line)}
+.mk .dot{position:absolute;left:-10px;top:162px;width:20px;height:20px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 2px var(--line);cursor:pointer;transition:transform .2s;padding:0}
+.mk .dot.seen::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700}
+.mk .lab{position:absolute;transform:translateX(-50%);width:118px;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 6px;font-size:12.5px;line-height:1.2;cursor:pointer;color:var(--ink)}
+.mk .lab b{display:block;font-size:14px}
+.mk.cur .dot{transform:scale(1.35);box-shadow:0 0 0 3px var(--ink)}
+.mk.cur .lab{border-color:var(--ink);box-shadow:var(--shadow)}
+.mk.dim{opacity:.22}
+.zoombar{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.zoombar span{font-size:13px;color:var(--muted)}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:8px;width:220px;font-size:13px;line-height:1.3;opacity:0;transition:opacity .15s}
+.tip img{width:100%;height:110px;object-fit:contain;background:var(--surface-2);border-radius:8px;display:block;margin-bottom:6px}
+.tip.show{opacity:1}
+
+/* tarjeta */
+.card{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);overflow:hidden;position:relative}
+.card .autobar{position:absolute;left:0;top:0;height:3px;background:var(--brand);width:0}
+.card figure{margin:0;background:var(--brand-soft);display:flex;flex-direction:column}
+.card .imgbox{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:16px;min-height:260px}
+.card .imgbox button{border:0;padding:0;background:none;cursor:zoom-in;display:block}
+.card figure img{display:block;max-width:100%;max-height:440px;width:auto;height:auto;object-fit:contain;border-radius:6px}
+.card figcaption{font-size:12px;color:var(--muted);padding:8px 12px;background:var(--surface);border-top:1px solid var(--line)}
+.card .body{padding:24px 26px}
+.tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:#fff}
+.card h3{font-family:Fraunces,Georgia,serif;font-size:28px;line-height:1.15;margin:10px 0 4px}
+.card .who{color:var(--muted);margin:0 0 4px}
+.card .place{color:var(--muted);margin:0 0 14px;font-size:15px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px;flex-wrap:wrap}
+.tabs button{border:0;background:none;color:var(--muted);padding:8px 10px;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;font-size:15px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--brand)}
+.panel{min-height:120px;animation:fade .25s}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.conn{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.conn li{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:15px}
+.conn button{border:0;background:none;color:var(--brand);font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.links a{font-size:14px;border:1px solid var(--line);border-radius:10px;padding:7px 12px;text-decoration:none;background:var(--bg);color:var(--ink)}
+.links a:hover{border-color:var(--brand)}
+.links a.yt{border-color:#c4302b;color:#c4302b;font-weight:600}
+.nav-btns{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px}
+.nav-btns span{color:var(--muted);font-size:14px}
+
+/* mapa */
+.map-box{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.map-box svg{display:block;width:100%;height:auto;background:var(--sea);touch-action:none}
+.map-box .country{fill:var(--land);stroke:var(--surface);stroke-width:.5}
+.map-box .country.on{fill:var(--land-on)}
+.map-box .pin{cursor:pointer}
+.map-box .pin circle.halo{fill-opacity:.25}
+.map-box .pin.cur circle.core{stroke:var(--ink);stroke-width:2.5}
+.map-tools{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.map-tools .btn{width:36px;justify-content:center;padding:6px}
+.map-msg{padding:40px;text-align:center;color:var(--muted)}
+.places{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* red de influencias */
+.net-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px}
+.net-box,.net-info{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.net-box{overflow-x:auto}
+.net-box svg{display:block;min-width:640px;width:100%;height:auto}
+.net-box text{fill:var(--ink);font-family:"Source Sans 3",sans-serif}
+.net-info{padding:18px}
+.net-info h4{margin:0 0 8px;font-size:18px}
+.edge{fill:none;stroke:var(--muted);stroke-opacity:.45;stroke-width:2;cursor:pointer}
+.edge.dial{stroke-dasharray:6 5}
+.edge.hi{stroke:var(--accent);stroke-opacity:1;stroke-width:3.5}
+.node{cursor:pointer}
+.node.fade{opacity:.25}
+.edge.fade{stroke-opacity:.12}
+
+/* gráfico de corrientes */
+.chart-box{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow);overflow-x:auto}
+.chart-box svg{min-width:760px;width:100%;height:auto;display:block}
+.chart-box text{fill:var(--ink);font-family:"Source Sans 3",sans-serif}
+
+/* experiencia */
+.exp{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.exp article{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:14px;padding:18px}
+.exp h4{margin:0 0 6px;font-size:17px}
+.exp .rel{font-size:13px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.exp p{margin:6px 0 0}
+.exp a{font-size:14px}
+
+/* fuentes */
+.refs{font-size:15px;color:var(--muted)}
+.refs li{margin-bottom:6px}
+footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);font-size:14px}
+
+/* visor de imágenes */
+.lightbox{position:fixed;inset:0;z-index:100;background:rgba(10,14,12,.86);display:none;align-items:center;justify-content:center;padding:20px}
+.lightbox.open{display:flex}
+.lightbox figure{margin:0;max-width:min(900px,96vw);text-align:center;color:#eef1ef}
+.lightbox img{max-width:100%;max-height:78vh;border-radius:10px;background:#fff}
+.lightbox figcaption{margin-top:10px;font-size:14px}
+.lightbox .close{position:absolute;top:14px;right:16px;background:#fff;color:#111;border:0;border-radius:999px;width:40px;height:40px;font-size:22px;cursor:pointer}
+
+@media (max-width:820px){
+  .card{grid-template-columns:minmax(0,1fr)}
+  .card figure img{max-height:320px}
+  .card .imgbox{min-height:0}
+  .net-grid{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="kicker">Psicología de la Educación · Actividad 1</div>
+      <button class="pill" id="themeBtn" type="button">Cambiar tema</button>
+    </div>
+    <h1>De las charlas de James a la LOGSE</h1>
+    <p class="lead">Diez hitos que transformaron lo que sabemos sobre cómo aprendemos y qué significa enseñar bien. Recoge las principales escuelas que han dejado huella en las aulas, del funcionalismo al aprendizaje social, y acaba con una ley española cuyos efectos siguen vivos en los institutos.</p>
+    <div class="byline">Laura María Sanabria Rodríguez · Universidad Europea Miguel de Cervantes · 2026</div>
+    <div class="progress" aria-live="polite">
+      <span id="progText">Has explorado 0 de 10 sucesos</span>
+      <span class="bar"><i id="progBar"></i></span>
+      <button class="pill" id="resetSeen" type="button">Reiniciar</button>
+    </div>
+    <nav class="toc" aria-label="Secciones">
+      <a href="#linea">Línea temporal</a>
+      <a href="#mapa">Mapa</a>
+      <a href="#influencias">Red de influencias</a>
+      <a href="#corrientes">Corrientes</a>
+      <a href="#experiencia">Mi experiencia</a>
+      <a href="#fuentes">Fuentes</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="linea">
+    <h2>Línea temporal</h2>
+    <p class="sub">Arrastra la línea, acércala con la lupa, busca un autor o deja que el recorrido automático te la cuente.</p>
+    <div class="toolbar">
+      <label class="search"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="Buscar: Piaget, conductismo, España…" aria-label="Buscar en la línea temporal"></label>
+      <button class="btn" id="playBtn" type="button" aria-pressed="false">▶ Recorrido automático</button>
+    </div>
+    <div class="filters" id="filters" aria-label="Filtrar por corriente"></div>
+    <p class="hint">Consejo: usa las flechas ← → del teclado o desliza la ficha con el dedo para cambiar de suceso.</p>
+    <div class="track-wrap" id="trackWrap"><div class="track" id="track" role="tablist" aria-label="Sucesos ordenados por año"></div></div>
+    <div class="zoombar">
+      <button class="btn" id="zoomOut" type="button" aria-label="Alejar">－</button>
+      <button class="btn" id="zoomIn" type="button" aria-label="Acercar">＋</button>
+      <button class="btn" id="zoomFit" type="button">Ver toda la línea</button>
+      <span id="zoomLabel"></span>
+    </div>
+    <article class="card" id="card" aria-live="polite"></article>
+    <div class="nav-btns">
+      <button class="btn" type="button" id="prev">← Anterior</button>
+      <span id="counter"></span>
+      <button class="btn" type="button" id="next">Siguiente →</button>
+    </div>
+  </section>
+
+  <section id="mapa">
+    <h2>Mapa: dónde ocurrió</h2>
+    <p class="sub">Cada punto es un suceso. Pulsa en él para abrir su ficha, usa ＋ y － o la rueda del ratón para acercarte, y arrastra para moverte.</p>
+    <div class="map-box" id="mapBox"><div class="map-msg">Cargando el mapa…</div></div>
+    <div class="places" id="places"></div>
+  </section>
+
+  <section id="influencias">
+    <h2>Red de influencias</h2>
+    <p class="sub">Los sucesos no están aislados. Pasa el ratón o pulsa sobre un autor o una flecha para ver qué relación hay entre ellos.</p>
+    <div class="net-grid">
+      <div class="net-box"><svg id="net" viewBox="0 0 760 420" role="img" aria-label="Red de influencias entre los sucesos"></svg></div>
+      <div class="net-info" id="netInfo"><h4>¿Quién influyó en quién?</h4><p class="note" style="margin:0">Selecciona un autor o una flecha. Las líneas continuas indican influencia y las discontinuas, diálogo o crítica.</p></div>
+    </div>
+  </section>
+
+  <section id="corrientes">
+    <h2>Gráfico: las corrientes en el tiempo</h2>
+    <p class="sub">Cada franja indica, de forma aproximada, el periodo de mayor influencia de cada corriente en la escuela. Pulsa un punto para ir a su suceso.</p>
+    <div class="chart-box"><svg id="chart" viewBox="0 0 900 400" role="img" aria-label="Gráfico de corrientes de la psicología de la educación entre 1890 y 2000"></svg></div>
+    <p class="note">Elaboración propia. Las fechas de las franjas son orientativas.</p>
+  </section>
+
+  <section id="experiencia">
+    <h2>Mi experiencia</h2>
+    <p class="sub">Cuatro recuerdos de mi paso por el colegio y el instituto que conectan con la línea.</p>
+    <!-- EDITA AQUÍ: cambia estos recuerdos por los tuyos (y escríbelos con palabras distintas a las del PDF) -->
+    <div class="exp">
+      <article>
+        <div class="rel">Conecta con Skinner (1954)</div>
+        <h4>Pegatinas por recitar sin fallos</h4>
+        <p>En el colegio, repetir en voz alta tablas y listas tenía premio. Funcionaba para memorizar, pero no tanto para entender lo que me sabía de carrerilla.</p>
+        <a href="#" data-go="6">Ver suceso →</a>
+      </article>
+      <article>
+        <div class="rel">Conecta con Vygotsky (1934) y Ausubel (1963)</div>
+        <h4>Una pista en lugar de la solución</h4>
+        <p>Mi profesora de Matemáticas de 2.º de la ESO empezaba cada tema preguntando lo que ya sabíamos, nos ayudaba lo justo para que llegáramos solos al resultado y nos ponía a trabajar en parejas.</p>
+        <a href="#" data-go="4">Ver suceso →</a>
+      </article>
+      <article>
+        <div class="rel">Conecta con la LOGSE (1990)</div>
+        <h4>La orientadora que me ayudó a decidir</h4>
+        <p>Cuando llegué a 4.º de ESO estaba perdida con el Bachillerato. La orientadora me pasó un test de intereses y hablamos varias veces; fue mi primer contacto real con la psicología.</p>
+        <a href="#" data-go="9">Ver suceso →</a>
+      </article>
+      <article>
+        <div class="rel">Buena y mala enseñanza</div>
+        <h4>Cuando equivocarse daba miedo</h4>
+        <p>Un profesor de Lengua comentaba en alto los fallos de cada examen delante de todos, y acabé sin levantar la mano. Al compararlo con la profesora de Matemáticas entendí que enseñar bien exige un ambiente donde el error sea parte del aprendizaje.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="fuentes">
+    <h2>Fuentes</h2>
+    <ul class="refs" id="refs"></ul>
+    <p class="note">Imágenes de Wikimedia Commons, con su autoría y licencia en cada ficha. Mapa elaborado con datos de Natural Earth (dominio público).</p>
+  </section>
+</main>
+<footer><div class="wrap">Trabajo académico de la asignatura Psicología de la Educación (UEMC). Web de elaboración propia.</div></footer>
+
+<div class="tip" id="tip" role="tooltip"></div>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+  <button class="close" id="lbClose" type="button" aria-label="Cerrar">×</button>
+  <figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+const CORRIENTES = {
+  func:{n:"Funcionalismo", c:"var(--c-func)"},
+  cond:{n:"Conductismo", c:"var(--c-cond)"},
+  psico:{n:"Psicometría", c:"var(--c-psico)"},
+  nueva:{n:"Escuela Nueva", c:"var(--c-nueva)"},
+  hist:{n:"Histórico-cultural", c:"var(--c-hist)"},
+  const:{n:"Constructivismo", c:"var(--c-const)"},
+  cogn:{n:"Cognitivismo", c:"var(--c-cogn)"},
+  social:{n:"Aprendizaje social", c:"var(--c-social)"},
+  ley:{n:"Legislación en España", c:"var(--c-ley)"}
+};
+
+const EVENTS = [
+ {
+  "year": 1899,
+  "short": "James: charlas a maestros",
+  "cor": "func",
+  "title": "Talks to Teachers on Psychology",
+  "who": "William James (1842–1910) · Funcionalismo",
+  "ctx": "Últimos años del siglo XIX en Estados Unidos: la escuela pública se extiende y la psicología, recién independizada de la filosofía, empieza a trabajar en laboratorios.",
+  "what": "Reúne en un libro las charlas que, desde 1892, había ofrecido a los docentes de Cambridge (Massachusetts) por encargo de Harvard. Habla de hábitos, atención, memoria e interés con ejemplos de clase.",
+  "today": "Recordar que la psicología es una ciencia y la enseñanza un arte: la primera orienta al docente, pero no le da recetas.",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/William_James_b1842c.jpg/500px-William_James_b1842c.jpg",
+  "alt": "Retrato de William James",
+  "credit": "Notman Studios, 1903. Dominio público. Wikimedia Commons.",
+  "wiki": "https://es.wikipedia.org/wiki/William_James",
+  "extra": [
+   {
+    "t": "Leer el libro (Proyecto Gutenberg)",
+    "url": "https://www.gutenberg.org/ebooks/16287"
+   }
+  ],
+  "yt": "XQLU0TAhars",
+  "ytTitle": "Psicología de la educación. Concepto e historia (canal Anton Rohma)",
+  "place": "Cambridge (Massachusetts), Universidad de Harvard",
+  "lat": 42.374,
+  "lon": -71.117
+ },
+ {
+  "year": 1903,
+  "short": "Thorndike: nace la disciplina",
+  "cor": "cond",
+  "title": "Educational Psychology",
+  "who": "Edward L. Thorndike (1874–1949) · Conexionismo",
+  "ctx": "Las universidades americanas quieren medir y experimentar. En Nueva York, el Teachers College forma a los futuros maestros.",
+  "what": "Su manual pone nombre a la disciplina. De sus cajas problema con gatos sale la ley del efecto. En 1910 firma el artículo que abre el primer número del Journal of Educational Psychology.",
+  "today": "La práctica y las consecuencias influyen en lo que aprendemos. También la costumbre de evaluar con datos.",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/PSM_V80_D211_Edward_Lee_Thorndike.png/500px-PSM_V80_D211_Edward_Lee_Thorndike.png",
+  "alt": "Retrato de Edward L. Thorndike",
+  "credit": "Popular Science Monthly, 1912. Dominio público. Wikimedia Commons.",
+  "wiki": "https://es.wikipedia.org/wiki/Edward_Thorndike",
+  "extra": [
+   {
+    "t": "Artículo de 1910 (Classics in the History of Psychology)",
+    "url": "https://psychclassics.yorku.ca/Thorndike/education.htm"
+   }
+  ],
+  "yt": "qlpZs6PsvV4",
+  "ytTitle": "Thorndike. Aprendizaje por ensayo y error. Ley del efecto (Pablo Rodríguez)",
+  "place": "Nueva York, Teachers College de la Universidad de Columbia",
+  "lat": 40.81,
+  "lon": -73.961
+ },
+ {
+  "year": 1905,
+  "short": "Binet y Simon: primera escala",
+  "cor": "psico",
+  "title": "La escala métrica de la inteligencia",
+  "who": "Alfred Binet (1857–1911) y Théodore Simon (1872–1961) · Psicometría",
+  "ctx": "Francia: la primaria es obligatoria desde 1882 y en 1904 una comisión ministerial estudia qué hacer con los alumnos que no siguen el ritmo.",
+  "what": "Presentan treinta tareas ordenadas por dificultad para estimar el nivel intelectual de cada niño sin depender solo del juicio del médico. En la revisión de 1908 aparece la idea de edad mental.",
+  "today": "Es el origen de la evaluación psicopedagógica. Binet confiaba en que la enseñanza podía mejorar la inteligencia; usar sus pruebas para clasificar y apartar a los alumnos fue un mal uso posterior. Un test está para ayudar, no para etiquetar.",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Alfred_Binet.jpg/500px-Alfred_Binet.jpg",
+  "alt": "Retrato de Alfred Binet",
+  "credit": "Fotógrafo desconocido (National Library of Medicine). Dominio público. Wikimedia Commons.",
+  "wiki": "https://es.wikipedia.org/wiki/Alfred_Binet",
+  "extra": [
+   {
+    "t": "Cociente intelectual",
+    "url": "https://es.wikipedia.org/wiki/Cociente_intelectual"
+   }
+  ],
+  "yt": "W2bKaw2AJxs",
+  "ytTitle": "La oscura historia de los test de CI (TED-Ed, subtítulos en español)",
+  "place": "París, Francia",
+  "lat": 48.857,
+  "lon": 2.352
+ },
+ {
+  "year": 1907,
+  "short": "Montessori: Casa dei Bambini",
+  "cor": "nueva",
+  "title": "La primera Casa dei Bambini",
+  "who": "Maria Montessori (1870–1952) · Escuela Nueva",
+  "ctx": "Roma a comienzos del siglo XX: en los bloques de viviendas obreras, muchos niños pasan el día solos mientras sus familias trabajan.",
+  "what": "El 6 de enero de 1907 esta médica inaugura en el barrio de San Lorenzo su primera Casa dei Bambini, con unos cincuenta niños de 2 a 7 años. Observa cómo trabaja cada uno, les da muebles a su medida y material sensorial, y les deja escoger qué hacer en un espacio preparado para ellos.",
+  "today": "Rincones de trabajo, material manipulativo y autonomía en Educación Infantil. Se enmarca en la Escuela Nueva, el movimiento que pone al niño, y no al maestro, en el centro de la clase.",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Maria_Montessori_%28portrait%29.jpg/500px-Maria_Montessori_%28portrait%29.jpg",
+  "alt": "Retrato de Maria Montessori",
+  "credit": "Autor desconocido (Nationaal Archief). Dominio público. Wikimedia Commons.",
+  "wiki": "https://es.wikipedia.org/wiki/Maria_Montessori",
+  "extra": [
+   {
+    "t": "Casa dei Bambini",
+    "url": "https://es.wikipedia.org/wiki/Casa_dei_Bambini"
+   }
+  ],
+  "yt": "hvuIRXopJlU",
+  "ytTitle": "Entrevista a Maria Montessori (doblada al español)",
+  "place": "Roma, barrio de San Lorenzo",
+  "lat": 41.898,
+  "lon": 12.516
+ },
+ {
+  "year": 1934,
+  "short": "Vygotsky: Pensamiento y lenguaje",
+  "cor": "hist",
+  "title": "Pensamiento y lenguaje",
+  "who": "Lev S. Vygotsky (1896–1934) · Psicología histórico-cultural",
+  "ctx": "Unión Soviética de Stalin. Pocos años después su obra queda prohibida y no llega traducida al inglés hasta 1962.",
+  "what": "Se publica pocos meses después de que muriera de tuberculosis, con 37 años. Defiende que primero aprendemos con otros y luego hacemos nuestro lo aprendido, y que el lenguaje organiza el pensamiento.",
+  "today": "La zona de desarrollo próximo, el espacio entre lo que el alumno resuelve por sí mismo y lo que consigue si alguien le echa una mano. De ahí vienen el andamiaje y el trabajo cooperativo.",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/L.S.Vygotskij_-_My%C5%A1lenie_i_re%C4%8D_-_1934_-_frontespizio.jpg/500px-L.S.Vygotskij_-_My%C5%A1lenie_i_re%C4%8D_-_1934_-_frontespizio.jpg",
+  "alt": "Portada interior de la edición de 1934 de Pensamiento y lenguaje",
+  "credit": "Portada de la edición de 1934. Foto: Doseraxis, CC BY-SA 4.0. Wikimedia Commons.",
+  "wiki": "https://es.wikipedia.org/wiki/Lev_Vygotsky",
+  "extra": [
+   {
+    "t": "Zona de desarrollo próximo",
+    "url": "https://es.wikipedia.org/wiki/Zona_de_desarrollo_pr%C3%B3ximo"
+   }
+  ],
+  "yt": "fHdQWmbhfdE",
+  "ytTitle": "La teoría de Vygotsky (Sprouts Español)",
+  "place": "Moscú, Unión Soviética",
+  "lat": 55.756,
+  "lon": 37.617
+ },
+ {
+  "year": 1936,
+  "short": "Piaget: nace la inteligencia",
+  "cor": "const",
+  "title": "El nacimiento de la inteligencia en el niño",
+  "who": "Jean Piaget (1896–1980) · Epistemología genética",
+  "ctx": "Ginebra, entre las dos guerras. Piaget dirige además la Oficina Internacional de Educación (1929–1968).",
+  "what": "A partir de lo que observa en sus hijos Jacqueline, Lucienne y Laurent describe los seis subestadios del periodo sensoriomotor y los mecanismos de asimilación y acomodación.",
+  "today": "Aunque Piaget no era pedagogo, su modelo de estadios sostiene el constructivismo: cada alumno fabrica su conocimiento actuando, no lo recibe terminado. En clase, esto se traduce en respetar el momento evolutivo y proponer tareas en las que manipule, pruebe y descubra.",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/6/67/Jean_Piaget_in_Ann_Arbor.png",
+  "alt": "Jean Piaget en Ann Arbor",
+  "credit": "Anuario Michiganensian, 1968. Dominio público. Wikimedia Commons.",
+  "wiki": "https://es.wikipedia.org/wiki/Jean_Piaget",
+  "extra": [
+   {
+    "t": "Teoría del desarrollo cognitivo",
+    "url": "https://es.wikipedia.org/wiki/Teor%C3%ADa_del_desarrollo_cognitivo_de_Piaget"
+   }
+  ],
+  "yt": "yYFhPO5pArc",
+  "ytTitle": "La teoría del desarrollo cognitivo de Piaget (Sprouts Español)",
+  "place": "Ginebra, Suiza",
+  "lat": 46.204,
+  "lon": 6.143
+ },
+ {
+  "year": 1954,
+  "short": "Skinner: máquinas de enseñar",
+  "cor": "cond",
+  "title": "La ciencia del aprendizaje y el arte de enseñar",
+  "who": "B. F. Skinner (1904–1990) · Conductismo operante",
+  "ctx": "Estados Unidos de posguerra: auge del conductismo y fe en la tecnología.",
+  "what": "En otoño de 1953 visita el aula de matemáticas de su hija, en cuarto curso, y le sorprende que nadie sepa al momento si ha acertado. Al año siguiente publica su crítica y presenta una máquina de enseñar: el contenido avanza en pasos cortos, el alumno responde y sabe en el acto si ha acertado.",
+  "today": "Aplicaciones con puntos, rachas y corrección inmediata; enseñanza programada; economía de fichas.",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Skinner_teaching_machine_01.jpg/500px-Skinner_teaching_machine_01.jpg",
+  "alt": "Máquina de enseñar de Skinner",
+  "credit": "Foto: Silly rabbit, CC BY 3.0. Wikimedia Commons.",
+  "wiki": "https://es.wikipedia.org/wiki/Burrhus_Frederic_Skinner",
+  "extra": [
+   {
+    "t": "Enseñanza programada",
+    "url": "https://es.wikipedia.org/wiki/Ense%C3%B1anza_programada"
+   }
+  ],
+  "yt": "NeHx1mC0B-I",
+  "ytTitle": "Skinner explica su máquina de enseñar (subtítulos en español)",
+  "place": "Cambridge (Massachusetts), Universidad de Harvard",
+  "lat": 42.374,
+  "lon": -71.117
+ },
+ {
+  "year": 1963,
+  "short": "Ausubel: aprendizaje significativo",
+  "cor": "cogn",
+  "title": "The Psychology of Meaningful Verbal Learning",
+  "who": "David P. Ausubel (1918–2008) · Psicología cognitiva",
+  "ctx": "Años sesenta: la revolución cognitiva vuelve a poner la mente en el centro de la psicología.",
+  "what": "Distingue entre aprender de memoria y aprender con sentido. Para que ocurra lo segundo, lo nuevo tiene que anclarse en ideas que el alumno ya tiene, con ayuda de organizadores previos.",
+  "today": "Preguntas iniciales para activar lo que ya se sabe y mapas conceptuales, que Novak desarrolló a partir de sus ideas.",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/%C2%BFQue_Es_Un_Mapa_conceptual%3F.jpg/500px-%C2%BFQue_Es_Un_Mapa_conceptual%3F.jpg",
+  "alt": "Ejemplo de mapa conceptual",
+  "credit": "Mapa conceptual de Elissa Ku, CC BY-SA 4.0. Wikimedia Commons (no hay retrato libre de Ausubel).",
+  "wiki": "https://es.wikipedia.org/wiki/David_Ausubel",
+  "extra": [
+   {
+    "t": "Aprendizaje significativo",
+    "url": "https://es.wikipedia.org/wiki/Aprendizaje_significativo"
+   }
+  ],
+  "yt": "50CcnJXQ754",
+  "ytTitle": "Teoría del aprendizaje significativo de Ausubel (Pedagogía MX)",
+  "place": "Urbana (Illinois), Universidad de Illinois",
+  "lat": 40.11,
+  "lon": -88.227
+ },
+ {
+  "year": 1977,
+  "short": "Bandura: aprendizaje social",
+  "cor": "social",
+  "title": "Social Learning Theory",
+  "who": "Albert Bandura (1925–2021) · Teoría del aprendizaje social",
+  "ctx": "Estados Unidos, años sesenta y setenta: preocupa la violencia que los niños ven en televisión.",
+  "what": "Reúne lo que había mostrado con el muñeco Bobo desde 1961: los niños copian lo que ven hacer a un adulto. Se aprende mirando, sin necesidad de recibir un premio, y en ello intervienen la atención, la retención, la reproducción y la motivación.",
+  "today": "Modelado, aprendizaje entre iguales y confianza en la propia capacidad (autoeficacia).",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Albert_Bandura_Psychologist.jpg/500px-Albert_Bandura_Psychologist.jpg",
+  "alt": "Retrato de Albert Bandura",
+  "credit": "Albert Bandura, 2005, CC BY-SA 4.0. Wikimedia Commons.",
+  "wiki": "https://es.wikipedia.org/wiki/Albert_Bandura",
+  "extra": [
+   {
+    "t": "Experimento del muñeco Bobo",
+    "url": "https://es.wikipedia.org/wiki/Experimento_del_mu%C3%B1eco_Bobo"
+   }
+  ],
+  "yt": "3G_XoTkj4c8",
+  "ytTitle": "El experimento del muñeco Bobo (Píldoras de Psicología)",
+  "place": "Stanford (California), Universidad de Stanford",
+  "lat": 37.427,
+  "lon": -122.17
+ },
+ {
+  "year": 1990,
+  "short": "España: la LOGSE",
+  "cor": "ley",
+  "title": "Ley Orgánica de Ordenación General del Sistema Educativo",
+  "who": "Ministerio de Educación y Ciencia; César Coll en el diseño curricular · Constructivismo",
+  "ctx": "España: democracia asentada y entrada en la Comunidad Europea en 1986. Dos documentos de 1989, el Diseño Curricular Base y el Libro Blanco, preparan una reforma de inspiración constructivista.",
+  "what": "Aprobada el 3 de octubre de 1990, crea la ESO, alarga la escolaridad obligatoria hasta los dieciséis y garantiza la orientación académica, psicopedagógica y profesional (art. 60).",
+  "today": "Orientadores en los institutos, adaptaciones curriculares e integración del alumnado con necesidades educativas especiales. Las leyes posteriores han mantenido buena parte de estas ideas.",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Homage_to_the_Children_of_the_LOGSE_01.jpg/500px-Homage_to_the_Children_of_the_LOGSE_01.jpg",
+  "alt": "Escultura Homenaje a los niños de la LOGSE, de José Pereiro, en Málaga",
+  "credit": "“Homenaje a los niños de la LOGSE”, José Pereiro (1997). Foto: Daniel Capilla, CC BY-SA 4.0. Wikimedia Commons.",
+  "wiki": "https://es.wikipedia.org/wiki/Ley_Org%C3%A1nica_de_Ordenaci%C3%B3n_General_del_Sistema_Educativo_de_Espa%C3%B1a",
+  "extra": [
+   {
+    "t": "Texto en el BOE",
+    "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-1990-24172"
+   }
+  ],
+  "yt": "vpWexgyRM8w",
+  "ytTitle": "Implantación de la LOGSE en los institutos andaluces (reportaje de 1996, MemorANDA)",
+  "place": "Madrid, España",
+  "lat": 40.417,
+  "lon": -3.704
+ }
+];
+
+/* Relaciones entre sucesos (de, a, tipo, explicación) */
+const LINKS = [
+  {a:1899, b:1903, t:"inf", txt:"Thorndike estudió con William James en Harvard, donde empezó sus experimentos con animales."},
+  {a:1903, b:1954, t:"inf", txt:"La ley del efecto de Thorndike es el antecedente directo del condicionamiento operante de Skinner."},
+  {a:1905, b:1936, t:"inf", txt:"De joven, Piaget trabajó en París aplicando pruebas en el laboratorio de Binet, junto a Simon; allí le llamaron la atención los errores de los niños."},
+  {a:1936, b:1934, t:"dial", txt:"En Pensamiento y lenguaje, Vygotsky discute las primeras obras de Piaget sobre el lenguaje egocéntrico: diálogo y crítica entre los dos."},
+  {a:1954, b:1977, t:"dial", txt:"Bandura arranca del conductismo, pero demuestra que mirando a otros también se aprende, aunque no haya premio."},
+  {a:1936, b:1990, t:"inf", txt:"El constructivismo de la reforma LOGSE recoge de Piaget que cada alumno elabora su propio saber."},
+  {a:1934, b:1990, t:"inf", txt:"De Vygotsky, la reforma recoge la importancia de que docentes y compañeros echen una mano para aprender."},
+  {a:1963, b:1990, t:"inf", txt:"De Ausubel, la reforma toma el aprendizaje significativo y la importancia de los conocimientos previos."}
+];
+
+const REFS = [
+  "Ausubel, D. P. (1963). The psychology of meaningful verbal learning. Grune & Stratton.",
+  "Bandura, A. (1977). Social learning theory. Prentice-Hall.",
+  "Berliner, D. C. (1993). The 100-year journey of educational psychology. En T. K. Fagan y G. R. VandenBos (Eds.), Exploring applied psychology (pp. 37–78). APA.",
+  "Binet, A., y Simon, T. (1905). Méthodes nouvelles pour le diagnostic du niveau intellectuel des anormaux. L'Année Psychologique, 11, 191–244.",
+  "James, W. (1899). Talks to teachers on psychology. Henry Holt.",
+  "Ley Orgánica 1/1990, de 3 de octubre, de Ordenación General del Sistema Educativo. BOE, 238.",
+  "Montessori, M. (1909). Il metodo della pedagogia scientifica applicato all'educazione infantile nelle Case dei Bambini. S. Lapi.",
+  "Piaget, J. (1936). La naissance de l'intelligence chez l'enfant. Delachaux et Niestlé.",
+  "Skinner, B. F. (1954). The science of learning and the art of teaching. Harvard Educational Review, 24, 86–97.",
+  "Thorndike, E. L. (1903). Educational psychology. Lemcke & Buechner.",
+  "Vygotsky, L. S. (1995). Pensamiento y lenguaje. Paidós. (Original de 1934)"
+];
+
+/* ---------- utilidades ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const idx = y => EVENTS.findIndex(e=>e.year===y);
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+
+let current = 0, activeTab = "ctx";
+let active = new Set(EVENTS.map(e=>e.cor));
+let query = "";
+let seen = new Set(store.get("vistos", []));
+const tip = $("#tip");
+
+function matches(e){
+  if(!active.has(e.cor)) return false;
+  if(!query) return true;
+  const hay = [e.year,e.title,e.short,e.who,e.ctx,e.what,e.today,e.place,CORRIENTES[e.cor].n].join(" ").toLowerCase();
+  return hay.includes(query);
+}
+
+/* ---------- progreso ---------- */
+function updateProgress(){
+  $("#progText").textContent = `Has explorado ${seen.size} de ${EVENTS.length} sucesos`;
+  $("#progBar").style.width = (seen.size/EVENTS.length*100)+"%";
+}
+$("#resetSeen").onclick = ()=>{ seen = new Set(); store.set("vistos",[]); updateProgress(); renderTrack(); };
+
+/* ---------- filtros y búsqueda ---------- */
+function buildFilters(){
+  const f = $("#filters");
+  [...new Set(EVENTS.map(e=>e.cor))].forEach(k=>{
+    const b = document.createElement("button");
+    b.className="chip"; b.type="button"; b.setAttribute("aria-pressed","true");
+    b.innerHTML = `<i style="background:${CORRIENTES[k].c}"></i>${CORRIENTES[k].n}`;
+    b.onclick = ()=>{
+      if(active.has(k)){active.delete(k);b.setAttribute("aria-pressed","false")}
+      else {active.add(k);b.setAttribute("aria-pressed","true")}
+      if(active.size===0){EVENTS.forEach(e=>active.add(e.cor));f.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","true"))}
+      refreshAll();
+    };
+    f.appendChild(b);
+  });
+}
+$("#q").addEventListener("input", ev=>{ query = ev.target.value.trim().toLowerCase(); refreshAll(); });
+$("#q").addEventListener("keydown", ev=>{ if(ev.key==="Enter"){ const i=EVENTS.findIndex(matches); if(i>=0) select(i,true); }});
+function refreshAll(){
+  renderTrack(); renderPins();
+  if(!matches(EVENTS[current])){ const i=EVENTS.findIndex(matches); if(i>=0) select(i); }
+}
+
+/* ---------- línea temporal proporcional ---------- */
+const FROM=1890, TO=2000;
+const LEVEL = {1899:["up",0],1903:["down",0],1905:["up",1],1907:["down",1],1934:["up",0],1936:["down",0],1954:["up",0],1963:["down",0],1977:["up",0],1990:["down",0]};
+let zoom = 1;
+const wrap = $("#trackWrap"), track = $("#track");
+function pxPerYear(){ return Math.max(8, (wrap.clientWidth-80)/(TO-FROM)) * zoom; }
+function xOf(y){ return 40 + (y-FROM)*pxPerYear(); }
+function renderTrack(){
+  const W = xOf(TO)+40;
+  track.style.width = W+"px";
+  let h = `<div class="axis"></div>`;
+  for(let y=FROM;y<=TO;y+=10) h += `<div class="tick" style="left:${xOf(y)}px"><span>${y}</span></div>`;
+  EVENTS.forEach((e,i)=>{
+    const [dir,lv] = LEVEL[e.year]||["up",0];
+    const len = 34 + lv*62;
+    const stemTop = dir==="up" ? 170-len : 174;
+    const labTop = dir==="up" ? 170-len-48 : 174+len;
+    h += `<div class="mk${i===current?" cur":""}${matches(e)?"":" dim"}" style="left:${xOf(e.year)}px" data-i="${i}">
+      <div class="stem" style="top:${stemTop}px;height:${len}px"></div>
+      <button class="dot${seen.has(e.year)?" seen":""}" type="button" role="tab" aria-selected="${i===current}" aria-label="${e.year}: ${esc(e.short)}" style="background:${CORRIENTES[e.cor].c}"></button>
+      <div class="lab" style="top:${labTop}px"><b>${e.year}</b>${esc(e.short)}</div>
+    </div>`;
+  });
+  track.innerHTML = h;
+  track.querySelectorAll(".mk").forEach(m=>{
+    const i=+m.dataset.i;
+    m.querySelectorAll(".dot,.lab").forEach(el=>{
+      el.addEventListener("click",()=>{ if(!moved) { stopPlay(); select(i); } });
+      el.addEventListener("mouseenter",ev=>showTip(ev,EVENTS[i]));
+      el.addEventListener("mousemove",moveTip);
+      el.addEventListener("mouseleave",hideTip);
+    });
+  });
+  $("#zoomLabel").textContent = `Zoom ×${zoom.toFixed(1).replace(".0","")}`;
+}
+function centerOn(i, smooth=true){
+  const x = xOf(EVENTS[i].year) - wrap.clientWidth/2;
+  wrap.scrollTo({left:Math.max(0,x), behavior: smooth?"smooth":"auto"});
+}
+function setZoom(z){
+  const centerYear = FROM + (wrap.scrollLeft + wrap.clientWidth/2 - 40)/pxPerYear();
+  zoom = Math.min(5, Math.max(1, z));
+  renderTrack();
+  wrap.scrollLeft = 40 + (centerYear-FROM)*pxPerYear() - wrap.clientWidth/2;
+}
+$("#zoomIn").onclick = ()=>setZoom(zoom*1.5);
+$("#zoomOut").onclick = ()=>setZoom(zoom/1.5);
+$("#zoomFit").onclick = ()=>{ zoom=1; renderTrack(); wrap.scrollLeft=0; };
+wrap.addEventListener("wheel", ev=>{ if(ev.ctrlKey){ ev.preventDefault(); setZoom(zoom*(ev.deltaY<0?1.2:1/1.2)); } }, {passive:false});
+/* arrastrar con el ratón */
+let dragX=null, startScroll=0, moved=false;
+wrap.addEventListener("pointerdown", ev=>{ if(ev.pointerType!=="mouse") return; dragX=ev.clientX; startScroll=wrap.scrollLeft; moved=false; });
+window.addEventListener("pointermove", ev=>{ if(dragX===null) return; const dx=ev.clientX-dragX; if(Math.abs(dx)>4){ moved=true; wrap.classList.add("dragging"); } wrap.scrollLeft=startScroll-dx; });
+window.addEventListener("pointerup", ()=>{ dragX=null; wrap.classList.remove("dragging"); setTimeout(()=>moved=false,0); });
+window.addEventListener("resize", ()=>{ renderTrack(); });
+
+/* ---------- tooltip ---------- */
+function showTip(ev,e){
+  tip.innerHTML = `${e.img?`<img src="${e.img}" alt="">`:""}<b>${e.year} · ${esc(e.title)}</b><br><span style="color:var(--muted)">${esc(e.place||"")}</span>`;
+  tip.classList.add("show"); moveTip(ev);
+}
+function moveTip(ev){
+  const x = Math.min(window.innerWidth-236, ev.clientX+14), y = Math.min(window.innerHeight-200, ev.clientY+14);
+  tip.style.left = x+"px"; tip.style.top = y+"px";
+}
+function hideTip(){ tip.classList.remove("show"); }
+
+/* ---------- ficha ---------- */
+const TABS = [["ctx","Contexto"],["what","Qué pasó"],["today","Huella en el aula de hoy"],["conn","Conexiones"]];
+function connList(e){
+  const rel = LINKS.filter(l=>l.a===e.year||l.b===e.year);
+  if(!rel.length) return `<p>Este suceso no tiene relaciones directas con los demás de la línea, aunque comparte con ellos la idea de que el niño sea protagonista de su aprendizaje.</p>`;
+  return `<ul class="conn">${rel.map(l=>{ const other = l.a===e.year?l.b:l.a; const o=EVENTS[idx(other)];
+    return `<li><button type="button" data-go="${idx(other)}">${o.year} · ${esc(o.short)}</button> ${l.t==="dial"?"(diálogo o crítica)":""}<br>${esc(l.txt)}</li>`; }).join("")}</ul>`;
+}
+function renderPanel(e){
+  const p = $("#panel");
+  if(activeTab==="conn") p.innerHTML = connList(e);
+  else p.innerHTML = `<p style="margin:0">${e[activeTab]}</p>`;
+  p.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{ stopPlay(); select(+b.dataset.go,true); });
+  document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===activeTab));
+}
+function renderCard(){
+  const e = EVENTS[current];
+  const links = [];
+  if(e.wiki) links.push(`<a href="${e.wiki}" target="_blank" rel="noopener">Wikipedia ↗</a>`);
+  (e.extra||[]).forEach(x=>links.push(`<a href="${x.url}" target="_blank" rel="noopener">${esc(x.t)} ↗</a>`));
+  if(e.yt) links.push(`<a class="yt" href="https://www.youtube.com/watch?v=${e.yt}" target="_blank" rel="noopener" title="${esc(e.ytTitle||"Vídeo")}">▶ Ver vídeo en YouTube ↗</a>`);
+  $("#card").innerHTML = `
+    <div class="autobar" id="autobar"></div>
+    <figure>${e.img?`<div class="imgbox"><button type="button" id="zoomImg" aria-label="Ampliar imagen"><img src="${e.img}" alt="${esc(e.alt||e.title)}"></button></div>`:""}
+      ${e.credit?`<figcaption>${e.credit}</figcaption>`:""}</figure>
+    <div class="body">
+      <span class="tag" style="background:${CORRIENTES[e.cor].c}">${CORRIENTES[e.cor].n}</span>
+      <h3>${e.year} · ${esc(e.title)}</h3>
+      <p class="who">${esc(e.who)}</p>
+      <p class="place">📍 ${esc(e.place||"")}</p>
+      <div class="tabs" role="tablist">${TABS.map(([k,n])=>`<button type="button" role="tab" data-tab="${k}">${n}</button>`).join("")}</div>
+      <div class="panel" id="panel"></div>
+      <div class="links">${links.join("")}</div>
+      ${e.ytTitle?`<p class="note">Vídeo: ${esc(e.ytTitle)}</p>`:""}
+    </div>`;
+  document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{ stopPlay(); activeTab=b.dataset.tab; renderPanel(e); });
+  renderPanel(e);
+  const zi = $("#zoomImg"); if(zi) zi.onclick=()=>openLightbox(e);
+  $("#counter").textContent = `${current+1} de ${EVENTS.length}`;
+}
+function select(i, scrollToCard=false){
+  current = i; activeTab = "ctx";
+  seen.add(EVENTS[i].year); store.set("vistos",[...seen]); updateProgress();
+  renderTrack(); renderCard(); renderPins();
+  centerOn(i, !scrollToCard);
+  try{ history.replaceState(null,"","#s"+EVENTS[i].year); }catch(e){}
+  if(scrollToCard) document.getElementById("linea").scrollIntoView({behavior:"smooth"});
+}
+function step(d){
+  let i=current;
+  for(let n=0;n<EVENTS.length;n++){ i=(i+d+EVENTS.length)%EVENTS.length; if(matches(EVENTS[i])) break; }
+  select(i);
+}
+$("#prev").onclick=()=>{ stopPlay(); step(-1); };
+$("#next").onclick=()=>{ stopPlay(); step(1); };
+document.addEventListener("keydown",ev=>{
+  if(ev.target.closest("input,textarea")) return;
+  if(ev.key==="Escape") closeLightbox();
+  if($("#lightbox").classList.contains("open")) return;
+  if(ev.key==="ArrowRight"){ stopPlay(); step(1); }
+  if(ev.key==="ArrowLeft"){ stopPlay(); step(-1); }
+});
+/* deslizar con el dedo sobre la ficha */
+let touchX=null;
+$("#card").addEventListener("touchstart",ev=>{ touchX=ev.touches[0].clientX; },{passive:true});
+$("#card").addEventListener("touchend",ev=>{ if(touchX===null) return; const dx=ev.changedTouches[0].clientX-touchX; if(Math.abs(dx)>60){ stopPlay(); step(dx<0?1:-1); } touchX=null; });
+
+/* ---------- recorrido automático ---------- */
+let playTimer=null;
+const PLAY_MS = 9000;
+function startPlay(){
+  $("#playBtn").classList.add("on"); $("#playBtn").setAttribute("aria-pressed","true"); $("#playBtn").textContent="❚❚ Pausar recorrido";
+  const tick=()=>{ const bar=$("#autobar"); if(bar){ bar.style.transition="none"; bar.style.width="0"; requestAnimationFrame(()=>{ bar.style.transition=`width ${PLAY_MS}ms linear`; bar.style.width="100%"; }); } };
+  tick();
+  playTimer=setInterval(()=>{ step(1); tick(); }, PLAY_MS);
+}
+function stopPlay(){
+  if(!playTimer) return;
+  clearInterval(playTimer); playTimer=null;
+  $("#playBtn").classList.remove("on"); $("#playBtn").setAttribute("aria-pressed","false"); $("#playBtn").textContent="▶ Recorrido automático";
+  const bar=$("#autobar"); if(bar){ bar.style.transition="none"; bar.style.width="0"; }
+}
+$("#playBtn").onclick=()=> playTimer?stopPlay():startPlay();
+
+/* ---------- visor de imágenes ---------- */
+function openLightbox(e){ $("#lbImg").src=e.img; $("#lbImg").alt=e.alt||e.title; $("#lbCap").textContent=`${e.year} · ${e.title}. ${e.credit||""}`; $("#lightbox").classList.add("open"); $("#lbClose").focus(); }
+function closeLightbox(){ $("#lightbox").classList.remove("open"); }
+$("#lbClose").onclick=closeLightbox;
+$("#lightbox").addEventListener("click",ev=>{ if(ev.target.id==="lightbox") closeLightbox(); });
+
+/* ---------- mapa ---------- */
+let mapPins=null, mapZoomBy=null;
+function renderPins(){
+  if(!mapPins) return;
+  mapPins.classed("cur", d=>d.i===current).style("opacity", d=>matches(EVENTS[d.i])?1:.25);
+}
+function buildMap(){
+  const box=$("#mapBox");
+  if(!window.d3 || !window.topojson){ box.innerHTML=`<div class="map-msg">No se ha podido cargar el mapa. Comprueba la conexión a internet.</div>`; return; }
+  fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json").then(r=>r.json()).then(world=>{
+    box.innerHTML="";
+    const W=1000,H=520;
+    const svg=d3.select(box).append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("role","img").attr("aria-label","Mapa con el lugar de cada suceso");
+    const countries=topojson.feature(world, world.objects.countries).features;
+    const proj=d3.geoNaturalEarth1().fitExtent([[10,10],[W-10,H-10]], {type:"MultiPoint",coordinates:[[-128,22],[48,64],[-128,64],[48,22]]});
+    const path=d3.geoPath(proj);
+    const g=svg.append("g");
+    const ON=new Set(["United States of America","France","Italy","Russia","Switzerland","Spain"]);
+    g.selectAll("path").data(countries).join("path").attr("class",d=>"country"+(ON.has(d.properties.name)?" on":"")).attr("d",path);
+    const OFF={1899:[-7,0],1954:[7,0]};
+    const data=EVENTS.map((e,i)=>{ const p=proj([e.lon,e.lat]); const o=OFF[e.year]||[0,0]; return {i,x:p[0]+o[0],y:p[1]+o[1]}; });
+    mapPins=g.selectAll("g.pin").data(data).join("g").attr("class","pin").attr("transform",d=>`translate(${d.x},${d.y})`);
+    mapPins.append("circle").attr("class","halo").attr("r",12).attr("fill",d=>CORRIENTES[EVENTS[d.i].cor].c);
+    mapPins.append("circle").attr("class","core").attr("r",6).attr("fill",d=>CORRIENTES[EVENTS[d.i].cor].c).attr("stroke","var(--surface)").attr("stroke-width",1.5);
+    mapPins.on("click",(ev,d)=>{ stopPlay(); select(d.i,true); })
+      .on("mouseenter",(ev,d)=>showTip(ev,EVENTS[d.i])).on("mousemove",moveTip).on("mouseleave",hideTip);
+    const zoomer=d3.zoom().scaleExtent([1,8]).translateExtent([[0,0],[W,H]]).on("zoom",ev=>{
+      g.attr("transform",ev.transform);
+      const k=ev.transform.k;
+      mapPins.attr("transform",d=>`translate(${d.x},${d.y}) scale(${1/k})`);
+      g.selectAll("path").attr("stroke-width",.5/k);
+    });
+    svg.call(zoomer);
+    mapZoomBy=f=>svg.transition().duration(300).call(zoomer.scaleBy,f);
+    const tools=document.createElement("div"); tools.className="map-tools";
+    tools.innerHTML=`<button class="btn" type="button" aria-label="Acercar mapa">＋</button><button class="btn" type="button" aria-label="Alejar mapa">－</button><button class="btn" type="button" aria-label="Vista inicial">⟲</button>`;
+    const [bi,bo,br]=tools.querySelectorAll("button");
+    bi.onclick=()=>mapZoomBy(1.6); bo.onclick=()=>mapZoomBy(1/1.6); br.onclick=()=>svg.transition().duration(300).call(zoomer.transform,d3.zoomIdentity);
+    box.appendChild(tools);
+    renderPins();
+  }).catch(()=>{ box.innerHTML=`<div class="map-msg">No se ha podido cargar el mapa. Comprueba la conexión a internet.</div>`; });
+  const pl=$("#places");
+  pl.innerHTML=EVENTS.map((e,i)=>`<button class="pill" type="button" data-i="${i}">📍 ${esc(e.place.split(",")[0])} · ${e.year}</button>`).join("");
+  pl.querySelectorAll("button").forEach(b=>b.onclick=()=>{ stopPlay(); select(+b.dataset.i,true); });
+}
+
+/* ---------- red de influencias ---------- */
+const NODEPOS = {1899:[70,90],1903:[180,200],1905:[180,330],1907:[300,380],1934:[370,90],1936:[380,250],1954:[520,170],1963:[560,330],1977:[680,90],1990:[690,280]};
+function buildNet(){
+  const svg=$("#net"), NS="http://www.w3.org/2000/svg";
+  const el=(t,a,parent=svg)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);parent.appendChild(e);return e};
+  const defs=el("defs",{});
+  const mk=el("marker",{id:"arrow",viewBox:"0 0 10 10",refX:"10",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"},defs);
+  el("path",{d:"M0,0 L10,5 L0,10 z",fill:"currentColor"},mk);
+  svg.style.color="var(--muted)";
+  LINKS.forEach((l,k)=>{
+    const [x1,y1]=NODEPOS[l.a],[x2,y2]=NODEPOS[l.b];
+    const dx=x2-x1, dy=y2-y1, len=Math.hypot(dx,dy), r=35;
+    const sx=x1+dx/len*r, sy=y1+dy/len*r, ex=x2-dx/len*(r+4), ey=y2-dy/len*(r+4);
+    const mx=(sx+ex)/2 - dy*0.12, my=(sy+ey)/2 + dx*0.12;
+    const p=el("path",{d:`M${sx},${sy} Q${mx},${my} ${ex},${ey}`,class:"edge"+(l.t==="dial"?" dial":""),"data-k":k});
+    if(l.t!=="dial") p.setAttribute("marker-end","url(#arrow)");
+    p.addEventListener("click",()=>showLink(k)); p.addEventListener("mouseenter",()=>showLink(k));
+  });
+  EVENTS.forEach((e,i)=>{
+    const [x,y]=NODEPOS[e.year];
+    const g=el("g",{class:"node","data-y":e.year,tabindex:"0",role:"button","aria-label":`${e.year} ${e.short}`});
+    el("circle",{cx:x,cy:y,r:33,fill:CORRIENTES[e.cor].c,"fill-opacity":".18",stroke:CORRIENTES[e.cor].c,"stroke-width":"2.5"},g);
+    const t1=el("text",{x,y:y-3,"text-anchor":"middle","font-size":"14","font-weight":"700"},g); t1.textContent=e.year;
+    const nm=e.short.split(":")[0]; const t2=el("text",{x,y:y+13,"text-anchor":"middle","font-size":nm.length>9?"9.5":"11"},g); t2.textContent=nm;
+    g.addEventListener("mouseenter",()=>highlightNode(e.year,true));
+    g.addEventListener("click",()=>{ highlightNode(e.year,true); });
+    g.addEventListener("dblclick",()=>{ stopPlay(); select(i,true); });
+    g.addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ stopPlay(); select(i,true); } });
+  });
+}
+function resetNet(){ document.querySelectorAll('#net .edge').forEach(p=>p.classList.remove('hi','fade')); document.querySelectorAll('#net .node').forEach(n=>n.classList.remove('fade')); }
+function highlightNode(year, info=false){
+  const rel=new Set(LINKS.flatMap((l,k)=>(l.a===year||l.b===year)?[k]:[]));
+  const nb=new Set([year]); LINKS.forEach(l=>{ if(l.a===year) nb.add(l.b); if(l.b===year) nb.add(l.a); });
+  document.querySelectorAll("#net .edge").forEach(p=>{ const k=+p.dataset.k; p.classList.toggle("hi",rel.has(k)); p.classList.toggle("fade",!rel.has(k)); });
+  document.querySelectorAll("#net .node").forEach(n=>n.classList.toggle("fade",!nb.has(+n.dataset.y)));
+  if(!info) return;
+  const e=EVENTS[idx(year)];
+  const items=LINKS.filter(l=>l.a===year||l.b===year);
+  $("#netInfo").innerHTML=`<h4>${e.year} · ${esc(e.short)}</h4>${items.length?`<ul class="conn">${items.map(l=>{const o=EVENTS[idx(l.a===year?l.b:l.a)];return `<li><b>${o.year} · ${esc(o.short)}</b>${l.t==="dial"?" (diálogo o crítica)":""}<br>${esc(l.txt)}</li>`}).join("")}</ul>`:`<p>Sin relaciones directas con los demás sucesos de la línea.</p>`}<p style="margin-top:12px"><button class="btn" type="button" id="netGo">Abrir la ficha de ${e.year}</button></p>`;
+  $("#netGo").onclick=()=>{ stopPlay(); select(idx(year),true); };
+}
+function showLink(k){
+  const l=LINKS[k], a=EVENTS[idx(l.a)], b=EVENTS[idx(l.b)];
+  document.querySelectorAll("#net .edge").forEach(p=>{ p.classList.toggle("hi",+p.dataset.k===k); p.classList.toggle("fade",+p.dataset.k!==k); });
+  document.querySelectorAll("#net .node").forEach(n=>n.classList.toggle("fade",![l.a,l.b].includes(+n.dataset.y)));
+  $("#netInfo").innerHTML=`<h4>${a.year} ${l.t==="dial"?"↔":"→"} ${b.year}</h4><p style="margin:0">${esc(l.txt)}</p>`;
+}
+
+document.getElementById('net').addEventListener('mouseleave', resetNet);
+
+/* ---------- gráfico de corrientes ---------- */
+function buildChart(){
+  const svg=$("#chart"); const NS="http://www.w3.org/2000/svg";
+  const x0=170,x1=880,y0=30,rowH=38,from=1890,to=2000;
+  const X=y=>x0+(y-from)/(to-from)*(x1-x0);
+  const BANDS=[["func",1890,1925],["psico",1905,2000],["nueva",1900,1945],["cond",1898,1975],["hist",1925,2000],["const",1930,2000],["cogn",1956,2000],["social",1961,2000],["ley",1990,2000]];
+  const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e};
+  for(let y=1890;y<=2000;y+=10){
+    el("line",{x1:X(y),x2:X(y),y1:y0-8,y2:y0+rowH*BANDS.length,stroke:"currentColor","stroke-opacity":".12"});
+    el("text",{x:X(y),y:y0+rowH*BANDS.length+18,"text-anchor":"middle","font-size":"12"}).textContent=y;
+  }
+  BANDS.forEach(([k,a,b],i)=>{
+    const y=y0+i*rowH;
+    el("text",{x:x0-12,y:y+20,"text-anchor":"end","font-size":"14"}).textContent=CORRIENTES[k].n;
+    el("rect",{x:X(a),y:y+6,width:X(b)-X(a),height:20,rx:10,fill:CORRIENTES[k].c,"fill-opacity":".28"});
+    EVENTS.forEach((e,j)=>{ if(e.cor===k){
+      const c=el("circle",{cx:X(e.year),cy:y+16,r:8,fill:CORRIENTES[k].c,stroke:"var(--surface)","stroke-width":"2",style:"cursor:pointer"});
+      c.addEventListener("click",()=>{ stopPlay(); select(j,true); });
+      c.addEventListener("mouseenter",ev=>showTip(ev,e)); c.addEventListener("mousemove",moveTip); c.addEventListener("mouseleave",hideTip);
+    }});
+  });
+  svg.style.color="var(--ink)";
+}
+
+/* ---------- experiencia y fuentes ---------- */
+document.querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",ev=>{ ev.preventDefault(); stopPlay(); select(+a.dataset.go,true); }));
+$("#refs").innerHTML=REFS.map(r=>`<li>${esc(r)}</li>`).join("");
+
+/* ---------- tema ---------- */
+(function(){
+  const root=document.documentElement;
+  const t=store.get("tema",null); if(t) root.setAttribute("data-theme",t);
+  $("#themeBtn").onclick=()=>{
+    const dark = root.getAttribute("data-theme")==="dark" || (!root.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+    const nt = dark ? "light" : "dark"; root.setAttribute("data-theme",nt); store.set("tema",nt);
+  };
+})();
+
+/* ---------- arranque ---------- */
+buildFilters(); buildChart(); buildNet(); buildMap();
+const fromHash = (location.hash.match(/^#s(\d{4})$/)||[])[1];
+const startIdx = fromHash && idx(+fromHash)>=0 ? idx(+fromHash) : 0;
+current = startIdx; renderTrack(); renderCard(); updateProgress();
+seen.add(EVENTS[startIdx].year); store.set("vistos",[...seen]); updateProgress(); renderTrack();
+</script>
+</body>
+</html>
